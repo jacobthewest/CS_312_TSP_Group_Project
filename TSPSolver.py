@@ -81,8 +81,30 @@ class TSPSolver:
 		algorithm</returns> 
 	'''
 
-	def greedy( self,time_allowance=60.0 ):
-		pass
+	def greedy(self, time_allowance=60.0):
+
+		results = {}
+
+		start_time = time.time()
+
+		# BEGIN COMPUTATION HERE
+		################################################################################################################
+
+
+
+
+		# END COMPUTATION HERE
+		################################################################################################################
+		end_time = time.time()
+
+		results['cost'] = 42069
+		results['time'] = end_time - start_time
+		results['count'] = 42069
+		results['soln'] = TSPSolution(self._scenario.getCities())
+		results['max'] = None
+		results['total'] = None
+		results['pruned'] = None
+		return results
 	
 	
 	
