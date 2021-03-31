@@ -14,8 +14,10 @@ else:
 import time
 import numpy as np
 from TSPClasses import *
+from PriorityHeap import PriorityHeap
 import heapq
 import itertools
+from random import random
 
 
 
@@ -85,21 +87,57 @@ class TSPSolver:
 
 		results = {}
 
+		cities = self._scenario.getCities()
+
+		solution_Found = False
+
+
 		start_time = time.time()
+
+		route = []
 
 		# BEGIN COMPUTATION HERE
 		################################################################################################################
 
+		while not solution_Found and time.time() - start_time <= time_allowance:
 
+			route = []
 
+			index = int(random() * len(cities))
+
+			queue = PriorityHeap(len(cities))
+
+			for i in range(0, len(cities)):
+
+				queue.insert(cities[i], cities[index].costTo(cities[i]))
+
+			while queue.size() != 0 and queue.getTopPriority() != np.inf:
+
+				if queue.size() == 0:
+
+					solution_Found = True
+
+					break
+
+				nextCity = queue.delete_min()
+
+				route.append(nextCity)
+
+				for i in range(0, len(cities)):
+
+					if queue.contains(cities[i]):
+
+						queue.decrease_Key(cities[i], nextCity.costTo(cities[i]))
 
 		# END COMPUTATION HERE
 		################################################################################################################
 		end_time = time.time()
 
-		results['cost'] = 42069
+		greedySolution = TSPSolution(route)
+
+		results['cost'] = greedySolution.cost() if solution_Found else np.inf
 		results['time'] = end_time - start_time
-		results['count'] = 42069
+		results['count'] = 1
 		results['soln'] = TSPSolution(self._scenario.getCities())
 		results['max'] = None
 		results['total'] = None

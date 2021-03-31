@@ -45,8 +45,8 @@ class PriorityHeap:
         while node_index > 0 and self.__heap[self.__getParent(node_index)][1] > self.__heap[node_index][1]:
             #swap each other's positions on the node map
 
-            child_node_number = self.__heap[node_index][0].node_id
-            parent_node_number = self.__heap[self.__getParent(node_index)][0].node_id
+            child_node_number = self.__heap[node_index][0]._index
+            parent_node_number = self.__heap[self.__getParent(node_index)][0]._index
 
             self.__map[child_node_number] = self.__getParent(node_index)
             self.__map[parent_node_number] = node_index
@@ -71,8 +71,8 @@ class PriorityHeap:
             if left_index < self.__size and self.__heap[node_index][1] > self.__heap[left_index][1]:
                 #swap the map positions
 
-                parent_node_num = self.__heap[node_index][0].node_id
-                child_node_num = self.__heap[left_index][0].node_id
+                parent_node_num = self.__heap[node_index][0]._index
+                child_node_num = self.__heap[left_index][0]._index
 
                 self.__map[parent_node_num] = left_index
                 self.__map[child_node_num] = node_index
@@ -90,8 +90,8 @@ class PriorityHeap:
             if right_index < self.__size and self.__heap[node_index][1] > self.__heap[left_index][1]:
                 #swap the map positions
 
-                parent_node_num = self.__heap[node_index][0].node_id
-                child_node_num = self.__heap[right_index][0].node_id
+                parent_node_num = self.__heap[node_index][0]._index
+                child_node_num = self.__heap[right_index][0]._index
 
                 self.__map[parent_node_num] = right_index
                 self.__map[child_node_num] = node_index
@@ -105,8 +105,8 @@ class PriorityHeap:
 
         elif self.__heap[right_index][1] > self.__heap[left_index][1]:
 
-            parent_node_num = self.__heap[node_index][0].node_id
-            child_node_num = self.__heap[left_index][0].node_id
+            parent_node_num = self.__heap[node_index][0]._index
+            child_node_num = self.__heap[left_index][0]._index
 
             self.__map[parent_node_num] = left_index
             self.__map[child_node_num] = node_index
@@ -120,8 +120,8 @@ class PriorityHeap:
 
         else:
 
-            parent_node_num = self.__heap[node_index][0].node_id
-            child_node_num = self.__heap[right_index][0].node_id
+            parent_node_num = self.__heap[node_index][0]._index
+            child_node_num = self.__heap[right_index][0]._index
 
             self.__map[parent_node_num] = right_index
             self.__map[child_node_num] = node_index
@@ -155,7 +155,7 @@ class PriorityHeap:
 
         #make a mapping
 
-        self.__map[node.node_id] = self.__size - 1
+        self.__map[node._index] = self.__size - 1
 
         #move the node up
         self.__MoveUp(self.__size - 1)
@@ -174,8 +174,9 @@ class PriorityHeap:
         min = self.__heap[0][0]
 
         #swap the end leaf with the root and delete the root
+        self.__map[self.__heap[0][0]._index] = None
         self.__heap[0] = self.__heap[self.__size - 1]
-        self.__map[self.__heap[0][0].node_id] = None
+
 
         self.__heap[self.__size - 1] = [None, nm.inf]
         self.__size -= 1
@@ -192,7 +193,7 @@ class PriorityHeap:
 
 
         #find the value on the map
-        index = self.__map[node.node_id]
+        index = self.__map[node._index]
 
         if index == None:
 
@@ -215,5 +216,9 @@ class PriorityHeap:
     # finds if a node is in the queue
     def contains(self, node):
 
-        return not(self.__map[node.node_id] == None)
+        return not(self.__map[node._index] == None)
+
+    def getTopPriority(self):
+
+        return self.__heap[0][1]
 
