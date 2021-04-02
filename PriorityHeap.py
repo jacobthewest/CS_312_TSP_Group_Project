@@ -7,7 +7,6 @@ import numpy as nm
 
 
 class PriorityHeap:
-
     # The heap array -- here, nodes are sorted by index where
     # i_parent * 2 + 2 = i_right_child. The left child is adjacent to the
     # right child
@@ -43,7 +42,7 @@ class PriorityHeap:
 
         # While the parent priority is greater than the child
         while node_index > 0 and self.__heap[self.__getParent(node_index)][1] > self.__heap[node_index][1]:
-            #swap each other's positions on the node map
+            # swap each other's positions on the node map
 
             child_node_number = self.__heap[node_index][0]._index
             parent_node_number = self.__heap[self.__getParent(node_index)][0]._index
@@ -51,7 +50,7 @@ class PriorityHeap:
             self.__map[child_node_number] = self.__getParent(node_index)
             self.__map[parent_node_number] = node_index
 
-            #now swap the two
+            # now swap the two
 
             temp = self.__heap[self.__getParent(node_index)]
             self.__heap[self.__getParent(node_index)] = self.__heap[node_index]
@@ -64,12 +63,12 @@ class PriorityHeap:
         left_index = self.__getLeftChild(node_index)
         right_index = self.__getRightChild(node_index)
 
-        #TODO: Fix this conditional statement to make sure no index errors happen
+        # TODO: Fix this conditional statement to make sure no index errors happen
 
         # if the right doesn't exist
         if right_index >= self.__size:
             if left_index < self.__size and self.__heap[node_index][1] > self.__heap[left_index][1]:
-                #swap the map positions
+                # swap the map positions
 
                 parent_node_num = self.__heap[node_index][0]._index
                 child_node_num = self.__heap[left_index][0]._index
@@ -77,8 +76,8 @@ class PriorityHeap:
                 self.__map[parent_node_num] = left_index
                 self.__map[child_node_num] = node_index
 
-                #swap the nodes
-                temp  = self.__heap[left_index]
+                # swap the nodes
+                temp = self.__heap[left_index]
                 self.__heap[left_index] = self.__heap[node_index]
                 self.__heap[node_index] = temp
 
@@ -88,7 +87,7 @@ class PriorityHeap:
         elif left_index >= self.__size:
 
             if right_index < self.__size and self.__heap[node_index][1] > self.__heap[left_index][1]:
-                #swap the map positions
+                # swap the map positions
 
                 parent_node_num = self.__heap[node_index][0]._index
                 child_node_num = self.__heap[right_index][0]._index
@@ -96,7 +95,7 @@ class PriorityHeap:
                 self.__map[parent_node_num] = right_index
                 self.__map[child_node_num] = node_index
 
-                #swap the nodes
+                # swap the nodes
                 temp = self.__heap[right_index]
                 self.__heap[right_index] = self.__heap[node_index]
                 self.__heap[node_index] = temp
@@ -133,7 +132,6 @@ class PriorityHeap:
 
             self.__MoveDown(right_index)
 
-
     # returns the number of elements in the swqueues
     def size(self):
 
@@ -147,36 +145,34 @@ class PriorityHeap:
         # create a data entry
         data = [node, priority]
 
-        #update the size
+        # update the size
         self.__size += 1
 
-        #put the node in the heap
+        # put the node in the heap
         self.__heap[self.__size - 1] = data
 
-        #make a mapping
+        # make a mapping
 
         self.__map[node._index] = self.__size - 1
 
-        #move the node up
+        # move the node up
         self.__MoveUp(self.__size - 1)
-
 
     # Returns and also deletes the top item on the queue
     # OUTPUT: the item of lowest priority number. In the case of Dijkstra's algorithm, a node
     def delete_min(self):
 
-        #if there's nothing then return zero
+        # if there's nothing then return zero
         if self.__size == 0:
-
             return
 
         # find the top value
         min = self.__heap[0][0]
 
-        #swap the end leaf with the root and delete the root
+        # swap the end leaf with the root and delete the root
         self.__map[self.__heap[0][0]._index] = None
         self.__heap[0] = self.__heap[self.__size - 1]
-
+        self.__map[self.__heap[0][0]._index] = 0
 
         self.__heap[self.__size - 1] = [None, nm.inf]
         self.__size -= 1
@@ -191,20 +187,18 @@ class PriorityHeap:
     #       -  priority: the new priority number of the value
     def decrease_Key(self, node, priority):
 
-
-        #find the value on the map
+        # find the value on the map
         index = self.__map[node._index]
 
         if index == None:
-
             return
 
         # change the value
         oldPriority = self.__heap[index][1]
         self.__heap[index][1] = priority
 
-        #move up or down the list accordingly
-        if(priority < oldPriority):
+        # move up or down the list accordingly
+        if (priority < oldPriority):
 
             self.__MoveUp(index)
 
@@ -212,11 +206,11 @@ class PriorityHeap:
 
             self.__MoveDown(index)
 
-    
     # finds if a node is in the queue
     def contains(self, node):
 
-        return not(self.__map[node._index] == None)
+        return not (self.__map[node._index] == None)
+
 
     def getTopPriority(self):
 

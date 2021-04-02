@@ -15,6 +15,7 @@ import time
 import numpy as np
 from TSPClasses import *
 from PriorityHeap import PriorityHeap
+from Priority_Array import PriorityArray
 import heapq
 import itertools
 from random import random
@@ -89,56 +90,54 @@ class TSPSolver:
 
 		cities = self._scenario.getCities()
 
-		solution_Found = False
-
+		route = []
 
 		start_time = time.time()
-
-		route = []
 
 		# BEGIN COMPUTATION HERE
 		################################################################################################################
 
-		while not solution_Found and time.time() - start_time <= time_allowance:
+		route = []
 
-			route = []
+		index = 0
 
-			index = int(random() * len(cities))
+		queue = PriorityArray()
 
-			queue = PriorityHeap(len(cities))
+		route.append(cities[index])
+
+		for i in range(1, len(cities)):
+
+			queue.insert(cities[i], cities[index].costTo(cities[i]))
+
+		while queue.size() != 0: #and queue.getTopPriority() != np.inf:
+
+			nextCity = queue.delete_min()
+
+			route.append(nextCity)
+
+			if queue.size() == 0:
+
+				break
 
 			for i in range(0, len(cities)):
 
-				queue.insert(cities[i], cities[index].costTo(cities[i]))
+				if queue.contains(cities[i]):
 
-			while queue.size() != 0 and queue.getTopPriority() != np.inf:
+					queue.decrease_Key(cities[i], nextCity.costTo(cities[i]))
 
-				if queue.size() == 0:
-
-					solution_Found = True
-
-					break
-
-				nextCity = queue.delete_min()
-
-				route.append(nextCity)
-
-				for i in range(0, len(cities)):
-
-					if queue.contains(cities[i]):
-
-						queue.decrease_Key(cities[i], nextCity.costTo(cities[i]))
 
 		# END COMPUTATION HERE
 		################################################################################################################
 		end_time = time.time()
 
+		#make the route a loop
+
 		greedySolution = TSPSolution(route)
 
-		results['cost'] = greedySolution.cost() if solution_Found else np.inf
+		results['cost'] = greedySolution.cost
 		results['time'] = end_time - start_time
 		results['count'] = 1
-		results['soln'] = TSPSolution(self._scenario.getCities())
+		results['soln'] = greedySolution
 		results['max'] = None
 		results['total'] = None
 		results['pruned'] = None

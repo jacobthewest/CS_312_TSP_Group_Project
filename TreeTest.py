@@ -3,11 +3,11 @@ from PriorityHeap import PriorityHeap
 
 class node:
 
-    node_id = None
+    _index = None
 
     def __init__(self, id):
 
-        self.node_id = id
+        self._index = id
 
 
 def test_heap():
