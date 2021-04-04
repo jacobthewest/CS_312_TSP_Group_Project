@@ -92,6 +92,8 @@ class TSPSolver:
 
 		route = []
 
+		solution_found = False
+
 		start_time = time.time()
 
 		# BEGIN COMPUTATION HERE
@@ -109,7 +111,7 @@ class TSPSolver:
 
 			queue.insert(cities[i], cities[index].costTo(cities[i]))
 
-		while queue.size() != 0: #and queue.getTopPriority() != np.inf:
+		while queue.size() != 0 and time.time()-start_time < time_allowance:
 
 			nextCity = queue.delete_min()
 
@@ -117,7 +119,9 @@ class TSPSolver:
 
 			if queue.size() == 0:
 
+				solution_found = True
 				break
+
 
 			for i in range(0, len(cities)):
 
@@ -134,10 +138,10 @@ class TSPSolver:
 
 		greedySolution = TSPSolution(route)
 
-		results['cost'] = greedySolution.cost
+		results['cost'] = 1 if greedySolution.cost != np.inf and solution_found else np.inf
 		results['time'] = end_time - start_time
-		results['count'] = 1
-		results['soln'] = greedySolution
+		results['count'] = 1 if greedySolution.cost != np.inf and solution_found else 0
+		results['soln'] = greedySolution if greedySolution.cost != np.inf and solution_found else None
 		results['max'] = None
 		results['total'] = None
 		results['pruned'] = None
