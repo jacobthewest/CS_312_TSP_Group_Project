@@ -4,9 +4,10 @@
 #
 # DATA: a cost matrix, cost, a related city, a parent
 #
-# METHODS: getChildMatrix(p,n), getPath()
+# METHODS: getChildMatrix(p,n), getPath(), solveMatrix
 
 import TSPClasses
+import numpy as np
 
 class TSPNODE:
 
@@ -23,9 +24,56 @@ class TSPNODE:
         self.city = city
         self.parent = parent
 
-        # assert data types
-        assert type(city) == TSPClasses.City
-        assert type(parent) == TSPNODE
+        # reduce the matrix
+        self.reduceMatrix()
+
+    # a function that reduces the matrix given to the node and adds any
+    # reduction costs to the node's cost var
+    def reduceMatrix(self):
+
+        # go through each row and find the min
+        for i in range(0,len(self.cost_matrix)):
+
+            #find the min
+            minimum  = min(self.cost_matrix[i])
+
+            # if the min is not 0 or inf
+            if minimum != 0 and minimum != np.inf:
+
+                # add the min to the cost total
+                self.cost += minimum
+
+                # subtract the min from every row
+
+                for j in range(0, len(self.cost_matrix[i])):
+
+                    self.cost_matrix[i][j] = self.cost_matrix[i][j] - minimum
+
+        # now do the same for each column
+
+        for j in range(0, len(self.cost_matrix[0])):
+
+            # find the min
+            minimum = np.inf
+
+            for i in range(0, len(self.cost_matrix)):
+
+                if self.cost_matrix[i][j] < minimum:
+
+                    minimum = self.cost_matrix[i][j]
+
+            # if the min is not 0 or inf
+            if minimum != 0 and minimum != np.inf:
+
+                # add the min to the cost total
+                self.cost += minimum
+
+                # subtract the min from every row
+
+                for i in range(0, len(self.cost_matrix)):
+                    self.cost_matrix[i][j] = self.cost_matrix[i][j] - minimum
+
+
 
 
     # Recursively gets the current path using the parents
