@@ -8,21 +8,24 @@
 
 import TSPClasses
 import numpy as np
+from copy import deepcopy
 
 class TSPNODE:
 
     cost = 0
     cost_matrix = []
+    depth = 0
     city = None
     parent = None
 
     # All data must be defined in the constructor
-    def __init__(self, matrix, cost, city, parent):
+    def __init__(self, matrix, cost, city, parent, depth):
 
         self.cost_matrix = matrix
         self.cost = cost
         self.city = city
         self.parent = parent
+        self.depth = depth
 
         # reduce the matrix
         self.reduceMatrix()
@@ -32,10 +35,15 @@ class TSPNODE:
     def reduceMatrix(self):
 
         # go through each row and find the min
-        for i in range(0,len(self.cost_matrix)):
+        for i in range(0, len(self.cost_matrix)):
 
             #find the min
-            minimum  = min(self.cost_matrix[i])
+            minimum = np.inf
+            for j in range(0, len(self.cost_matrix[i])):
+
+                if self.cost_matrix[i][j] < minimum:
+
+                    minimum = self.cost_matrix[i][j]
 
             # if the min is not 0 or inf
             if minimum != 0 and minimum != np.inf:
@@ -87,5 +95,23 @@ class TSPNODE:
 
             return self.parent.getPath() + [self.city]
 
+
+    # makes the cost reduction matrix for a child matrix going from fromNode, to toNode
+    def getChildMatrix(self, fromNode, toNode):
+
+        childMatrix = deepcopy(self.cost_matrix)
+
+        for j in range(0, len(childMatrix[0])):
+
+            childMatrix[fromNode][j] = np.inf
+
+        for i in range(0, len(childMatrix)):
+
+            childMatrix[i][toNode] = np.inf
+
+        childMatrix[toNode][fromNode] = np.inf
+        childMatrix[fromNode][toNode] = np.inf
+
+        return childMatrix
 
 
