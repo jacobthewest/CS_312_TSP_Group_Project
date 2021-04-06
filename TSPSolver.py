@@ -14,6 +14,7 @@ else:
 import time
 import numpy as np
 from TSPClasses import *
+from TSPNODE import TSPNODE
 from PriorityHeap import PriorityHeap
 from Priority_Array import PriorityArray
 import heapq
@@ -163,31 +164,64 @@ class TSPSolver:
 		#intialize the variables needed for computation
 		results = {}
 		cities = self._scenario.getCities()
-		ncities = len(cities)
 		foundTour = False
-		count = 0
+		num_solutions = 0
+		num_pruned = 0
+		num_perm = 0
+		largest_size = 0
 		bssf = None
 
 		start_time = time.time()
 
+		starting_matrix = []
+
+		for i in range(0, len(cities)):
+
+			starting_matrix.append([None] * len(cities))
+
+			for j in range(0, len(cities)):
+				starting_matrix[i][j] = cities[i].costTo(cities[j])
+
+		queue = []
+
 		#BEGIN COMPUTATION HERE
 		################################################################################################################
-		 # make the starting node from city[0]
-		# put the staring node into a heapqueue
+
+		# make the starting node from city[0]
+
+		starting_Node = TSPNODE(starting_matrix, 0, cities[0], None, 1)
+
+		heapq.heappush(starting_Node.cost, starting_Node) # put the staring node into a heapqueue
 
 		# find the upper bound by using a random edge length (not inf) of each city
 
-		# while the queue is not empty and time hasn't run out
+		bssf = TSPSolution([cities[0]] * len(cities))
 
-			# take the top node
+		# while the queue is not empty and time hasn't run out
+		while len(queue) != 0 and time.time() - start_time < time_allowance:
+
+			#take the top node and increase the number of permutations that were increased
+
+			topNode = heapq.heappop(queue)
 
 			# if the node's depth is equal to the len(cities), then we've found a solution
-				# number of solutions found ++
-				# if the solution is the best solution so far
-					# make it the best solution and change the upper bound to it's length
-				# continue
+			if topNode.depth == len(cities):
 
-			# for each child that hasn't been visited in it's path, make a node and put it in the queue
+				foundTour = True
+				num_solutions += 1
+
+				# number of solutions found ++heapq.heappush(starting_Node.cost, starting_Node)
+
+				if topNode.cost <= bssf.cost:
+
+					bssf = TSPSolution(topNode.getPath())
+					# make it the best solution and change the upper bound to it's length
+
+				continue
+
+			for j in range(0, len(cities)):
+
+
 				# if the node goes to a previously visited city or bad path -- len == inf
 					# move to next
 				# elif the node is valid, but the length is greater than the upper bound
@@ -206,11 +240,11 @@ class TSPSolver:
 		# return the dictionary with all values
 		results['cost'] = bssf.cost if foundTour else np.inf
 		results['time'] = end_time - start_time
-		results['count'] = count
+		results['count'] = num_solutions
 		results['soln'] = bssf
-		results['max'] = None
-		results['total'] = None
-		results['pruned'] = None
+		results['max'] = largest_size
+		results['total'] = num_perm
+		results['pruned'] = num_pruned
 		return results
 
 		return results
@@ -226,7 +260,7 @@ class TSPSolver:
 		algorithm</returns> 
 	'''
 		
-	def fancy( self,time_allowance=60.0 ):
+	def fancy(self, time_allowance=60.0):
 		pass
 		
 
