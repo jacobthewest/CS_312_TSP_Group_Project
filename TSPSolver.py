@@ -159,7 +159,61 @@ class TSPSolver:
 	'''
 		
 	def branchAndBound( self, time_allowance=60.0 ):
-		pass
+
+		#intialize the variables needed for computation
+		results = {}
+		cities = self._scenario.getCities()
+		ncities = len(cities)
+		foundTour = False
+		count = 0
+		bssf = None
+
+		start_time = time.time()
+
+		#BEGIN COMPUTATION HERE
+		################################################################################################################
+		 # make the starting node from city[0]
+		# put the staring node into a heapqueue
+
+		# find the upper bound by using a random edge length (not inf) of each city
+
+		# while the queue is not empty and time hasn't run out
+
+			# take the top node
+
+			# if the node's depth is equal to the len(cities), then we've found a solution
+				# number of solutions found ++
+				# if the solution is the best solution so far
+					# make it the best solution and change the upper bound to it's length
+				# continue
+
+			# for each child that hasn't been visited in it's path, make a node and put it in the queue
+				# if the node goes to a previously visited city or bad path -- len == inf
+					# move to next
+				# elif the node is valid, but the length is greater than the upper bound
+					# pruned ++
+					# move on to next
+				# else
+					# make node and put it in the queue
+
+		################################################################################################################
+		# END COMPUTATION HERE AND CALCULATE TIME PASSED
+
+		end_time = time.time() - start_time
+
+		# Do any final book keeping
+
+		# return the dictionary with all values
+		results['cost'] = bssf.cost if foundTour else np.inf
+		results['time'] = end_time - start_time
+		results['count'] = count
+		results['soln'] = bssf
+		results['max'] = None
+		results['total'] = None
+		results['pruned'] = None
+		return results
+
+		return results
 
 
 
