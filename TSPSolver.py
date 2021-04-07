@@ -15,7 +15,7 @@ from TSPClasses import *
 from CityWrapper import *
 import heapq
 import itertools
-
+INFINITY = math.inf
 
 
 class TSPSolver:
@@ -80,6 +80,11 @@ class TSPSolver:
         algorithm</returns> 
     '''
 
+    # Time complexity: O(n^2) because we compare every city to every other city when
+    #                  we are trying to find the min cost.
+    # Space complexity: O(n). Because of a map of size n called visitedCities,
+    #                   a heapQueue that is of size n (worst case),
+    #                   and a route list of size n.
     def greedy( self,time_allowance=60.0 ):
         results = {}
         cities = self._scenario.getCities()
@@ -95,6 +100,7 @@ class TSPSolver:
         # For every city, get the minimal cost to another city and add it to our route
         i = 0
         counter = 0
+        # This is O(n^2) because of an n size loop inside of an n size loop
         while(counter < len(cities)):
             currCity = cities[i]
             heapFromCurrCity = []
@@ -127,7 +133,7 @@ class TSPSolver:
 
         endTime = time.time()
         bssf = TSPSolution(route)
-        bssf.cost = math.inf
+        bssf.cost = INFINITY
         if len(visitedCities.keys()) == len(cities):
             bssf.cost = runningCost
 
@@ -137,9 +143,9 @@ class TSPSolver:
         results['cost'] = bssf.cost
         results['count'] = 1  # Number of solutions discovered. Will always be 1 for the greedy solution
         results['soln'] = bssf  # Object containing the route.
-        results['max'] = None  # Max size of the queue. Will always be 1 for the greedy solution
-        results['total'] = None  # Total states generated. Will always be 1 for the greedy solution
-        results['pruned'] = None  # Number of states pruned. Will always be 0 for the greedy solution
+        results['max'] = 1  # Max size of the queue. Will always be 1 for the greedy solution
+        results['total'] = 1  # Total states generated. Will always be 1 for the greedy solution
+        results['pruned'] = 0  # Number of states pruned. Will always be 0 for the greedy solution
 
         return results
 
