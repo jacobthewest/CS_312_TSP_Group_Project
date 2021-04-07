@@ -172,8 +172,30 @@ class TSPSolver:
         best solution found.  You may use the other three field however you like.
         algorithm</returns> 
     '''
-
+    # method that executes the 2 opt solve
     def fancy( self,time_allowance=60.0 ):
+
+        # use the greedy solution to find the initial TSP solution
+
+        # if we still have time --> begin the 2opt
+
+        # while new solutions are found and time is left
+            # changemade = false
+
+            # for each city in the bssf route array
+
+                # make a new array swapping cities[i] with cities of [(i +1 )%len(cities)]
+                # skip prev. change
+                # if that array is better:
+                    # make it the new solution
+                    # store the change that was made as prev_change -- that's i
+                    # break the loop
+                    # changeMade = true
+
+            # if no change was made, then break
+
+
+
         pass
 
 
