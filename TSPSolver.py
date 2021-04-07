@@ -80,7 +80,7 @@ class TSPSolver:
         algorithm</returns> 
     '''
 
-    # Time complexity: O(n^2) because we compare every city to every other city when
+    # Time complexity: O(n^2) because we compare every city to every other city when 
     #                  we are trying to find the min cost.
     # Space complexity: O(n). Because of a map of size n called visitedCities,
     #                   a heapQueue that is of size n (worst case),
