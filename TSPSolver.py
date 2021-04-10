@@ -80,20 +80,22 @@ class TSPSolver:
         algorithm</returns> 
     '''
 
-    # Time complexity: O(n^2) because we compare every city to every other city when 
+    # Time complexity: O(n^2) because we compare every city to every other city when
     #                  we are trying to find the min cost.
     # Space complexity: O(n). Because of a map of size n called visitedCities,
     #                   a heapQueue that is of size n (worst case),
     #                   and a route list of size n.
-    def greedy( self,time_allowance=60.0 ):
+    def greedy(self, time_allowance=60.0):
+
         results = {}
-        cities = self._scenario.getCities()
+        self._cities = self._scenario.getCities()
         visitedCities = {}
 
-        startTime = time.time()
+        self._startTime = time.time()
+        self._time_allowance = time_allowance
         route = []
-        route.append(cities[0]) # Add starting city to the route
-        visitedCities[cities[0]._name] = True  # Prevent us from visiting our starting city
+        route.append(self._cities[0])  # Add starting city to the route
+        visitedCities[self._cities[0]._name] = True  # Prevent us from visiting our starting city
 
         runningCost = 0
 
@@ -101,16 +103,16 @@ class TSPSolver:
         i = 0
         counter = 0
         # This is O(n^2) because of an n size loop inside of an n size loop
-        while(counter < len(cities)):
-            currCity = cities[i]
+        while (counter < len(self._cities)):
+            currCity = self._cities[i]
             heapFromCurrCity = []
 
             # Find costs from current city to every other city
-            for j in range(len(cities)):
-                tempCity = cities[j]
+            for j in range(len(self._cities)):
+                tempCity = self._cities[j]
                 try:
-                    isVisited = visitedCities[tempCity._name] # Will not throw exception if city has
-                                                              # been visited. Therefore, skip it.
+                    isVisited = visitedCities[tempCity._name]  # Will not throw exception if city has
+                    # been visited. Therefore, skip it.
                 except:
                     cost = currCity.costTo(tempCity)
                     wrappedCity = CityWrapper(cost, tempCity, j)
@@ -121,30 +123,30 @@ class TSPSolver:
                 # currCity is the last city. We are done.
                 break
             wrappedCity = heapq.heappop(heapFromCurrCity)
-            closestCityToCurrentCity =  wrappedCity._city
+            closestCityToCurrentCity = wrappedCity._city
             cost = wrappedCity._cost
+
             i = wrappedCity._indexInCities
             visitedCities[closestCityToCurrentCity._name] = True  # Prevent us from visiting the closest city
-                                                                  # in future calculations
+            # in future calculations
             route.append(closestCityToCurrentCity)
             runningCost += cost
-
             counter += 1
 
         endTime = time.time()
         bssf = TSPSolution(route)
         bssf.cost = INFINITY
-        if len(visitedCities.keys()) == len(cities):
+        if len(visitedCities.keys()) == len(self._cities):
             bssf.cost = runningCost
 
-        timePassed = endTime - startTime
+        timePassed = endTime - self._startTime
 
         results['time'] = timePassed
         results['cost'] = bssf.cost
-        results['count'] = 1  # Number of solutions discovered. Will always be 1 for the greedy solution
+        results['count'] = 0  # Number of solutions discovered. Will always be 1 for the greedy solution
         results['soln'] = bssf  # Object containing the route.
-        results['max'] = 1  # Max size of the queue. Will always be 1 for the greedy solution
-        results['total'] = 1  # Total states generated. Will always be 1 for the greedy solution
+        results['max'] = 0  # Max size of the queue. Will always be 1 for the greedy solution
+        results['total'] = 0  # Total states generated. Will always be 1 for the greedy solution
         results['pruned'] = 0  # Number of states pruned. Will always be 0 for the greedy solution
 
         return results
