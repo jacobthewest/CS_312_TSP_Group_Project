@@ -175,7 +175,55 @@ class TSPSolver:
         algorithm</returns> 
     '''
     # method that executes the 2 opt solve
-    def fancy( self,time_allowance=60.0 ):
+    def fancy(self, time_allowance=60.0):
+
+        improvementMade = True
+        timesUp = False
+
+        self.initResults() # sets self_results to be equal to the greedy results
+        self._startTime = time.time()
+
+        self.isTimeUp() # Returns True if time has run out
+        if self._timesUp:
+
+        # repeat until no improvement is made or time runs out {
+        #    start_again:
+        #    best_distance = calculateTotalDistance(existing_route)
+        #    for (i = 1; i <= number of nodes eligible to be swapped - 1; i++) {
+        #       for (k = i + 1; k <= number of nodes eligible to be swapped; k++) {
+        #           new_route = 2optSwap(existing_route, i, k)
+        #           new_distance = calculateTotalDistance(new_route)
+        #           if (new_distance < best_distance) {
+        #               existing_route = new_route
+        #               best_distance = new_distance
+        #               goto start_again
+        #           }
+        #       }
+        #   }
+        # }
+
+        pass
+
+    def twoOptSwap(self, route, i, k):
+        pass
+        # Take route[0] to route[i - 1] and add them in order to new_route
+        # Take route[i] to route[k] and add them in reverse order to new_route
+        # Take route[k+1] to end and add them in order to new_route
+        # return new_route
+
+    def isTimeUp(self):
+        currTime = time.time()
+        tempTimePassed = currTime - self._startTime
+        totalTimePassed = tempTimePassed + self._results['time']
+        if totalTimePassed >= self._time_allowance:
+            return True # Time is up
+        return False # Time is not up
+
+    def initResults(self):
+        self._results = self.greedy()
+
+    # method that executes the 2 opt solve
+    def otherFancy( self,time_allowance=60.0 ):
 
         # use the greedy solution to find the initial TSP solution
 
@@ -199,7 +247,3 @@ class TSPSolver:
 
 
         pass
-
-
-
-
