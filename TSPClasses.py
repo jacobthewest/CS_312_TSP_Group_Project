@@ -133,6 +133,12 @@ class City:
     def __str__(self):
         return self._name
 
+    # Overwritten comparator function
+    def __eq__(self, other):
+        if self._name == other._name:
+            return True
+        return False
+
     def setIndexAndName(self, index, name):
         self._index = index
         self._name = name
