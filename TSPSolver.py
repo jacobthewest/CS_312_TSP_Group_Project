@@ -201,11 +201,11 @@ class TSPSolver:
     #                   The worst case scenario is such that we generate n unique solutions for n cities,
     #                   thus, bringing the resulting worst case space complexity up to O(n^2).
     def fancy(self, time_allowance=60.0):
-        self._generatedRoutes = {} # A map used to track unique routes our algorithm generates
-        self._generatedRoutes[str(self._results['soln'].route)] = True # Add the first unique route
-                                                                       # (found from the greedy solution)
-                                                                       # to self._generatedRoutes
         self.initResults(time_allowance) # sets self_results to be equal to the greedy results
+        self._generatedRoutes = {}  # A map used to track unique routes our algorithm generates
+        self._generatedRoutes[str(self._results['soln'].route)] = True  # Add the first unique route
+                                                                        # (found from the greedy solution)
+                                                                        # to self._generatedRoutes
         self._startTime = time.time() # Initializing a global variable we will reference in a time checker function
 
         improvementMade = True
@@ -224,19 +224,27 @@ class TSPSolver:
             for i in range(1, numNodesEligibleToBeSwapped):
                 # This for loop makes the time complexity to be O(n^2)
                 for k in range(1, numNodesEligibleToBeSwapped + 1):
+
+                    if self.isTimeUp():
+                        return self.wrapThingsUp()
+
                     # O(n) function call.
                     new_route, new_distance, isUniqueRoute = self.twoOptSwap(existing_route, i, k)
                     if new_distance < best_distance:
-                        self._results['total'].route = new_route # Because we have generated a unique new state
+                        self._results['total'] += 1 # Because we have generated a unique new state
+                        self._results['count'] += 1 # Update the count of solutions discovered.
                         self._results['soln'].route = new_route
                         self._results['soln'].cost = new_distance
                         improvementMade = True
-                        k = INFINITY # Just to force us to leave repeat the loop
-                        i = INFINITY # Just to force us to leave repeat the loop
+                        i = numNodesEligibleToBeSwapped # Just to force us to leave the i loop
+                        break # Just to force us to leave the k loop
                     elif isUniqueRoute:
                         self._results['pruned'] += 1 # A route is 'pruned' only if it is unique
-                        self._results['total'].route = new_route  # Because we have generated a unique new state
+                        self._results['total'] += 1  # Because we have generated a unique new state
 
+        return self.wrapThingsUp()
+
+    def wrapThingsUp(self):
         self._results['cost'] = self._results['soln'].cost
         return self._results
 
@@ -274,7 +282,7 @@ class TSPSolver:
     #
     # Time Complexity: O(n) because we are adding every item from route to new_route, only
     #                  in a newly arranged manner.
-    # Space Complexity: O(n) becauase we are building a new list (new_route) of size n cities
+    # Space Complexity: O(n) because we are building a new list (new_route) of size n cities
     def twoOptSwap(self, route, i, k):
         new_route = []
         runningCost = 0
