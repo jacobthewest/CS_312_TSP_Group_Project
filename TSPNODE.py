@@ -30,6 +30,10 @@ class TSPNODE:
         # reduce the matrix
         self.reduceMatrix()
 
+    def __lt__(self, other):
+
+        return self.depth < other.depth
+
     # a function that reduces the matrix given to the node and adds any
     # reduction costs to the node's cost var
     def reduceMatrix(self):

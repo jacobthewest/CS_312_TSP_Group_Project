@@ -15,7 +15,6 @@ import time
 import numpy as np
 from TSPClasses import *
 from TSPNODE import TSPNODE
-from PriorityHeap import PriorityHeap
 from Priority_Array import PriorityArray
 import heapq
 import itertools
@@ -139,10 +138,10 @@ class TSPSolver:
 
 		greedySolution = TSPSolution(route)
 
-		results['cost'] = 1 if greedySolution.cost != np.inf and solution_found else np.inf
+		results['cost'] = greedySolution.cost if greedySolution.cost != np.inf and solution_found else np.inf
 		results['time'] = end_time - start_time
 		results['count'] = 1 if greedySolution.cost != np.inf and solution_found else 0
-		results['soln'] = greedySolution if greedySolution.cost != np.inf and solution_found else None
+		results['soln'] = greedySolution
 		results['max'] = None
 		results['total'] = None
 		results['pruned'] = None
@@ -163,6 +162,7 @@ class TSPSolver:
 
 		#intialize the variables needed for computation
 		results = {}
+
 		cities = self._scenario.getCities()
 		foundTour = False
 		num_solutions = 0
@@ -171,7 +171,7 @@ class TSPSolver:
 		largest_size = 0
 		bssf = None
 
-		start_time = time.time()
+
 
 		starting_matrix = []
 
@@ -184,6 +184,8 @@ class TSPSolver:
 
 		queue = []
 
+		start_time = time.time()
+
 		#BEGIN COMPUTATION HERE
 		################################################################################################################
 
@@ -191,18 +193,35 @@ class TSPSolver:
 
 		starting_Node = TSPNODE(starting_matrix, 0, cities[0], None, 1)
 
-		heapq.heappush(starting_Node.cost, starting_Node) # put the staring node into a heapqueue
+		heapq.heappush(queue, (starting_Node.depth, starting_Node)) # put the staring node into a heapqueue
 
-		# find the upper bound by using a random edge length (not inf) of each city
+		# find the upper bound by using a greedy path
 
-		bssf = TSPSolution([cities[0]] * len(cities))
+		# if the greedy cannot find a solution, then return the results
+		results = self.greedy(time_allowance)
+
+		bssf = results['soln']
+		if bssf.cost != np.inf:
+
+			foundTour = True
 
 		# while the queue is not empty and time hasn't run out
 		while len(queue) != 0 and time.time() - start_time < time_allowance:
 
-			#take the top node and increase the number of permutations that were increased
+			# record the queue size
+			if len(queue) > largest_size:
 
-			topNode = heapq.heappop(queue)
+				largest_size = len(queue)
+
+
+			#take the top node and increase the number of permutations that were increased
+			topNode = heapq.heappop(queue)[1]
+
+			#check to make sure that this wasn't a state left after a better solution was found
+			if topNode.cost > bssf.cost:
+
+				num_pruned += 1
+				continue
 
 			# if the node's depth is equal to the len(cities), then we've found a solution
 			if topNode.depth == len(cities):
@@ -219,26 +238,41 @@ class TSPSolver:
 
 				continue
 
+			curr_index = topNode.city._index
 			for j in range(0, len(cities)):
 
-
 				# if the node goes to a previously visited city or bad path -- len == inf
-					# move to next
+				# move to next
+				if topNode.cost_matrix[curr_index][j] != np.inf:
+
+					newCost = topNode.cost + topNode.cost_matrix[curr_index][j]
+					newNode = TSPNODE(topNode.getChildMatrix(curr_index, j), newCost, cities[j], topNode, topNode.depth + 1)
+					num_perm += 1
+
+
 				# elif the node is valid, but the length is greater than the upper bound
 					# pruned ++
 					# move on to next
-				# else
-					# make node and put it in the queue
+					if newNode.cost >= bssf.cost:
+
+						num_pruned += 1
+
+					else: # else make node and put it in the queue
+
+						heapq.heappush(queue, (newNode.cost/ newNode.depth, newNode))
+
 
 		################################################################################################################
-		# END COMPUTATION HERE AND CALCULATE TIME PASSED
+		# END COMPUTATION HERE AND CALCULATE TIME PASSEs
 
-		end_time = time.time() - start_time
+		end_time = time.time()
+
+		num_pruned += len(queue)
 
 		# Do any final book keeping
 
 		# return the dictionary with all values
-		results['cost'] = bssf.cost if foundTour else np.inf
+		results['cost'] = bssf.cost
 		results['time'] = end_time - start_time
 		results['count'] = num_solutions
 		results['soln'] = bssf
@@ -247,7 +281,6 @@ class TSPSolver:
 		results['pruned'] = num_pruned
 		return results
 
-		return results
 
 
 
